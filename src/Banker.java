@@ -97,7 +97,7 @@ public class Banker {
         }
 
         // main cycle
-        while (finished.size() + aborted.size() != taskList.size() && cycle<40) {
+        while (finished.size() + aborted.size() != taskList.size() && cycle < 40) {
 
             // unblock first
             if (!blocked.isEmpty()) {
@@ -141,7 +141,7 @@ public class Banker {
 
                 Task current = ready.remove();
                 Actions action = current.getProcess().peek();
-                System.out.println(current);
+
                 if (current.state == 0 && current.delay == 0) {
                     if (action.getAction().equals("request")) {
                         if (resourcesList.get(action.getResourceNumber()).getAvailableUnits()
@@ -183,8 +183,8 @@ public class Banker {
                         // record the time taken for the task
                         // record its waiting time
 
-                            current.finishTime = cycle + 1;
-                            finished.add(current);
+                        current.finishTime = cycle + 1;
+                        finished.add(current);
                     }
 
 
@@ -193,7 +193,7 @@ public class Banker {
                     // terminate
                     current.finishTime = cycle + 1;
                     finished.add(current);
-                }else if (current.getProcess().peek().getAction().equals("terminate")
+                } else if (current.getProcess().peek().getAction().equals("terminate")
                         && current.getProcess().peek().getDelay() == 0 && current.finalDelay > 0) {
                     // continue delaying
                     current.delay -= 1;
@@ -202,19 +202,19 @@ public class Banker {
                         && current.finalDelay == 0) {
                     // start delaying for the last time
                     current.finalDelay++;
-                    current.delay --;
+                    current.delay--;
                     current.delay += current.getProcess().peek().getDelay();
                     ready.add(current);
                 } else if (current.delay == 1 && current.getProcess().peek().getAction().equals("terminate") &&
-                        current.finalDelay >0){
+                        current.finalDelay > 0) {
                     // terminate
                     current.finishTime = cycle + 1;
                     finished.add(current);
-                } else if (current.delay == 0){
+                } else if (current.delay == 0) {
                     ready.add(current);
 
                 } else {
-                    current.delay --;
+                    current.delay--;
                     ready.add(current);
                 }
 
@@ -262,10 +262,6 @@ public class Banker {
                 }
                 buffer.clear();
             }
-            System.out.println(cycle);
-            System.out.println("ready: " + ready);
-            System.out.println("blocked: " + blocked);
-            System.out.println("finished: " + finished);
             cycle++;
             update(blocked);
         }
@@ -276,7 +272,7 @@ public class Banker {
         int totalWaitingTime = 0;
 
         System.out.println("\t\t" + "FIFO");
-        for (int i = 0; i < taskList.size(); i++){
+        for (int i = 0; i < taskList.size(); i++) {
             System.out.print("Task " + (i + 1) + ": \t");
             if (taskList.get(i + 1).aborted) {
                 System.out.println("aborted");
@@ -285,14 +281,14 @@ public class Banker {
                 totalFinishTime += taskList.get(i + 1).finishTime;
                 System.out.print(taskList.get(i + 1).waitingTime + "\t");
                 totalWaitingTime += taskList.get(i + 1).waitingTime;
-                System.out.println((int)((double)taskList.get(i + 1).waitingTime / taskList.get(i + 1).finishTime * 100 )+ "%");
+                System.out.println((int) ((double) taskList.get(i + 1).waitingTime / taskList.get(i + 1).finishTime * 100) + "%");
             }
         }
 
         System.out.print("total: " + "\t\t");
         System.out.print(totalFinishTime + "\t");
         System.out.print(totalWaitingTime + "\t");
-        System.out.println((int)((double)totalWaitingTime/totalFinishTime * 100) + "%");
+        System.out.println((int) ((double) totalWaitingTime / totalFinishTime * 100) + "%");
 
     }
 
@@ -345,9 +341,13 @@ public class Banker {
 
     // function to update status count
     public static void update(LinkedList<Task> a) {
-        for (Task x : a){
+        for (Task x : a) {
             x.waitingTime++;
         }
     }
+
+    
+
+
 
 }

@@ -6,11 +6,17 @@ public class Task {
     private HashMap<Integer,Integer> resourceUsage; // Resources, amount
     private LinkedList<Actions> process; // stores all of the actions of a task
     public int state;
+    public int finishTime;
+    public int waitingTime;
+    public Boolean aborted;
 
     public Task(int i){
         this.taskNo = i;
         this.process = new LinkedList<>();
         this.state = 0;
+        this.finishTime = 0;
+        this.waitingTime = 0;
+        this.aborted = false;
     }
 
     public void initiate(HashMap<Integer, Integer> j){
@@ -41,6 +47,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return taskNo + " " + process + resourceUsage;
+        return taskNo + " " + finishTime + waitingTime  + aborted;
     }
 }

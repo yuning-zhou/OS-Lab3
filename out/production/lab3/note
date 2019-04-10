@@ -1,0 +1,16 @@
+cycle = 0
+while not done
+  step1: Process all queue (i.e., previously blocked) requests
+     in fifo order.  Some may remain blocked since can't safely
+     satisfy the request.
+
+  step2: for t# = 1 to #tasks
+     if task(t#) not involved in step 1
+        do next action for task(t#)
+
+  cycle ++
+
+
+
+
+

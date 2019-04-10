@@ -90,13 +90,14 @@ public class Banker {
         ArrayList<int[]> buffer = new ArrayList<>(); // Index of Resources, Amount
         ArrayList<Task> garage = new ArrayList<>(); // temporary storage to modify the blocked q
 
+
         // populate the ready list
         for (int i = 0; i < taskList.size(); i++) {
             ready.add(taskList.get(i + 1));
         }
 
         // main cycle
-        while (finished.size() + aborted.size() != taskList.size()) {
+        while (finished.size() + aborted.size() != taskList.size() && cycle<40) {
 
             // unblock first
             if (!blocked.isEmpty()) {
@@ -140,15 +141,15 @@ public class Banker {
 
                 Task current = ready.remove();
                 Actions action = current.getProcess().peek();
-
-                if (current.state == 0) {
+                System.out.println(current);
+                if (current.state == 0 && current.delay == 0) {
                     if (action.getAction().equals("request")) {
                         if (resourcesList.get(action.getResourceNumber()).getAvailableUnits()
                                 - action.getResourceAmount() >= 0) {
                             // it will be granted
                             resourcesList.get(action.getResourceNumber()).use(action.getResourceAmount());
                             current.request(action.getResourceNumber(), action.getResourceNumber());
-
+                            current.delay += action.getDelay();
                             // put it back to the q
                             ready.add(current);
                             current.getProcess().pop(); // move on to the next action
@@ -166,10 +167,11 @@ public class Banker {
                         buffer.add(temp);
                         current.request(action.getResourceNumber(), -action.getResourceNumber());
                         current.getProcess().pop(); // move on to the next task
+                        current.delay += action.getDelay();
 
                         // peek at the next action
                         action = current.getProcess().peek();
-                        if (action.getAction().equals("terminate")) {
+                        if (action.getAction().equals("terminate") && current.delay == 0) {
                             // process has finished
                             current.finishTime = cycle + 1;
                             finished.add(current);
@@ -180,11 +182,39 @@ public class Banker {
                         // it has terminated
                         // record the time taken for the task
                         // record its waiting time
-                        current.finishTime = cycle + 1;
-                        finished.add(current);
+
+                            current.finishTime = cycle + 1;
+                            finished.add(current);
                     }
 
+
+                } else if (current.delay == 1 && current.getProcess().peek().getAction().equals("terminate")
+                        && current.getProcess().peek().getDelay() == 0 && current.finalDelay == 0) {
+                    // terminate
+                    current.finishTime = cycle + 1;
+                    finished.add(current);
+                }else if (current.getProcess().peek().getAction().equals("terminate")
+                        && current.getProcess().peek().getDelay() == 0 && current.finalDelay > 0) {
+                    // continue delaying
+                    current.delay -= 1;
+                    ready.add(current);
+                } else if (current.delay == 1 && current.getProcess().peek().getAction().equals("terminate")
+                        && current.finalDelay == 0) {
+                    // start delaying for the last time
+                    current.finalDelay++;
+                    current.delay --;
+                    current.delay += current.getProcess().peek().getDelay();
+                    ready.add(current);
+                } else if (current.delay == 1 && current.getProcess().peek().getAction().equals("terminate") &&
+                        current.finalDelay >0){
+                    // terminate
+                    current.finishTime = cycle + 1;
+                    finished.add(current);
+                } else if (current.delay == 0){
+                    ready.add(current);
+
                 } else {
+                    current.delay --;
                     ready.add(current);
                 }
 
@@ -232,7 +262,10 @@ public class Banker {
                 }
                 buffer.clear();
             }
-
+            System.out.println(cycle);
+            System.out.println("ready: " + ready);
+            System.out.println("blocked: " + blocked);
+            System.out.println("finished: " + finished);
             cycle++;
             update(blocked);
         }
@@ -260,12 +293,6 @@ public class Banker {
         System.out.print(totalFinishTime + "\t");
         System.out.print(totalWaitingTime + "\t");
         System.out.println((int)((double)totalWaitingTime/totalFinishTime * 100) + "%");
-
-
-
-
-
-
 
     }
 

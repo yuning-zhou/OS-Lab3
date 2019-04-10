@@ -9,6 +9,8 @@ public class Task {
     public int finishTime;
     public int waitingTime;
     public Boolean aborted;
+    public int delay;
+    public int finalDelay;
 
     public Task(int i){
         this.taskNo = i;
@@ -17,6 +19,8 @@ public class Task {
         this.finishTime = 0;
         this.waitingTime = 0;
         this.aborted = false;
+        this.delay = 0;
+        this.finalDelay = 0;
     }
 
     public void initiate(HashMap<Integer, Integer> j){
@@ -47,6 +51,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return taskNo + " " + finishTime + waitingTime  + aborted;
+        return taskNo + " " + delay + " ff: " + finalDelay;
     }
 }

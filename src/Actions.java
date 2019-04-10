@@ -26,7 +26,11 @@ public class Actions {
     }
 
     public int getResourceAmount() {
-        return resourceAmount;
+        return this.resourceAmount;
+    }
+
+    public int getDelay(){
+        return this.delay;
     }
 
     @Override
